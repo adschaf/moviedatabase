@@ -20,6 +20,7 @@ app.use(require('express-session')({
 app.get("/", function(req,res){
   res.render("home");
 });
+
 app.get("/search", function(req,res){
   res.render("search", {
           pageTestScript: '/qa/tests-search.js', username:req.session.username
@@ -30,12 +31,38 @@ app.get("/admin", function(req,res){
 var d = new Date();
   res.render("admin",{date:d});
 });
+
+app.get("/createAdmin", function(req,res){
+  res.render("createAdmin");
+});
+
+app.get("/resetPassword", function(req,res){
+  res.render("resetPassword");
+});
+
+app.post("/createAdmin", function(req,res){
+  console.log(req.body.username + "created");
+  try {
+	return res.xhr ?
+		res.render({ success:true }) :
+		res.redirect(303, '/login');
+  }catch{
+	return res.xhr ?
+		res.json({error: "Database error." }):
+		res.redirect(303, '/database-error');
+	}
+});
+
+
 app.post("/login", function(req,res){
 console.log(req.body);
 req.session.username = req.body.email;
 req.session.cookie.maxAge = 60000;
 res.redirect(303,'/search');
 });
+
+
+
 
 //custom 404 page
 app.use(function(req, res){
@@ -52,5 +79,6 @@ app.use(function(err, req, res, next){
 app.listen(app.get("port"), function(){
   console.log("Express started on");
 });
+
 
 
